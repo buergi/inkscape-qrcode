@@ -22,6 +22,7 @@ Inkscape extension which uses Segno to generate QR Codes.
 """
 from __future__ import absolute_import, unicode_literals
 import inkex
+import locale
 try:
     from ._segno import encoder, utils
 except (ImportError, ValueError):
@@ -73,6 +74,9 @@ class InkscapeQRCode(inkex.Effect):
             micro = True
         boost_error = opts.boost_error == 'true'
         want_background = opts.background == 'true'
+        input_encoding = locale.getdefaultlocale()[1]
+        if input_encoding and input_encoding != 'UTF-8':
+            opts.data = unicode(opts.data, input_encoding).encode('utf8')
         if not micro and opts.symbol_count > 1:
             qrs = encoder.encode_sequence(opts.data, version=version, error=error,
                                           encoding=encoder, boost_error=boost_error,
